@@ -6,9 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import ru.geekbrains.spring.market.Constants;
 import ru.geekbrains.spring.market.SortDirection;
 import ru.geekbrains.spring.market.exceptions.IncorrectParamException;
 import ru.geekbrains.spring.market.exceptions.ProductNotFoundException;
+import ru.geekbrains.spring.market.model.PageProductDto;
 import ru.geekbrains.spring.market.model.ProductDto;
 import ru.geekbrains.spring.market.repositories.ProductSpecifications;
 import ru.geekbrains.spring.market.services.ProductService;
@@ -24,11 +26,19 @@ public class ProductController {
     @GetMapping
     public List<ProductDto> getAll(@RequestParam MultiValueMap<String, String> params,
                                    @RequestParam(defaultValue = "1") Integer page,
-                                   @RequestParam(defaultValue = "10") Integer size,
+                                   @RequestParam(defaultValue = Constants.DEFAULT_PAGE_SIZE_STR) Integer size,
                                    @RequestParam(required = false) String sortCost,
                                    @RequestParam(required = false) String sortTitle,
                                    @RequestParam(required = false) Boolean costFirst) {
         validatePagingParams(page, size);
+        if (params.isEmpty() && sortCost == null && sortTitle == null &&
+                costFirst == null && size.equals(Constants.DEFAULT_PAGE_SIZE)) {
+            PageProductDto pageProductDto = productService.getAll(page - 1, size);
+            if (page > pageProductDto.getCountOfPages()) {
+                throw new IncorrectParamException("The total number of pages is " + pageProductDto.getCountOfPages());
+            }
+            return pageProductDto.getProducts();
+        }
         validateSortingParams(sortCost, sortTitle, costFirst);
         try {
             Page<ProductDto> productPage = productService.getAll(ProductSpecifications.build(params), page - 1, size,
