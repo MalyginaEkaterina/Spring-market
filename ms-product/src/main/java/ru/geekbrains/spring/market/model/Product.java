@@ -49,7 +49,7 @@ public class Product {
     public Product(ProductDto productDto) {
         this.id = productDto.getId();
         this.title = productDto.getTitle();
-        this.price = productDto.getCost();
+        this.price = productDto.getPrice();
         this.categories = productDto.getCategories() == null ? null : productDto.getCategories().stream().map(Category::new).collect(Collectors.toList());
     }
 }

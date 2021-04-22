@@ -20,7 +20,8 @@ public class BasketProductService {
 
     @Transactional
     public int updateCountByIdAndGuid(UUID guid, BasketDto basketProduct) {
-        return basketProductRepository.updateCountByIdAndGuid(guid, basketProduct.getId(), basketProduct.getProductCount());
+        return 0;
+//        return basketProductRepository.updateCountByIdAndGuid(guid, basketProduct.getId(), basketProduct.getProductCount());
     }
 
     @Transactional
