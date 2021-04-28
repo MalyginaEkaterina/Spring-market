@@ -23,6 +23,8 @@ public class Product {
     private String title;
     @Column
     private Double price;
+    @Column
+    private String description;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
@@ -46,10 +48,12 @@ public class Product {
     )
     private List<Category> categories;
 
-    public Product(ProductDto productDto) {
+    public Product(FullProductDto productDto) {
         this.id = productDto.getId();
         this.title = productDto.getTitle();
         this.price = productDto.getPrice();
+        this.description = productDto.getDescription();
+        this.pictureUrl = productDto.getPictureUrl();
         this.categories = productDto.getCategories() == null ? null : productDto.getCategories().stream().map(Category::new).collect(Collectors.toList());
     }
 }

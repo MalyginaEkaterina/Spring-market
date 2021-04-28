@@ -13,7 +13,7 @@ public class DeliveryType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Long id;
+    private Integer id;
 
     @Column
     private String name;

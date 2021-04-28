@@ -8,6 +8,7 @@ import ru.geekbrains.spring.market.exceptions.SessionExpiredException;
 import ru.geekbrains.spring.market.model.Basket;
 import ru.geekbrains.spring.market.model.BasketDto;
 import ru.geekbrains.spring.market.model.Session;
+import ru.geekbrains.spring.market.repositories.BasketProductRepository;
 import ru.geekbrains.spring.market.repositories.SessionRepository;
 
 import java.util.List;
@@ -19,8 +20,9 @@ import java.util.stream.Collectors;
 public class BasketService {
     @Autowired
     private SessionRepository sessionRepository;
+
     @Autowired
-    private BasketProductService basketProductService;
+    private BasketProductRepository basketProductRepository;
 
     public Session getSession() {
         return sessionRepository.save(new Session());
@@ -36,29 +38,52 @@ public class BasketService {
         }
     }
 
+    public List<BasketDto> getBasketByUserId(Integer userId) {
+        return basketProductRepository.findByUserID(userId).stream().map(BasketDto::new).collect(Collectors.toList());
+    }
+
     @Transactional
     public void add(UUID guid, BasketDto basketProductDto) {
         Session s = sessionRepository.findById(guid).orElseThrow(() -> new SessionExpiredException("Session was expired"));
         Basket b = new Basket(basketProductDto);
         b.setSession(s);
-        basketProductService.add(b);
+        basketProductRepository.save(b);
         sessionRepository.updateSessionUpdatedAt(guid);
+    }
+
+    public void addByUserId(Integer userId, BasketDto basketProductDto) {
+        Basket basket = new Basket(basketProductDto);
+        basket.setSession(null);
+        basket.setUserID(userId);
+        basketProductRepository.save(basket);
     }
 
     @Transactional
     public void delete(UUID guid, Long id) {
-        if (basketProductService.deleteByIdAndGuid(guid, id) > 0) {
+        if (basketProductRepository.deleteByIdAndSessionId(guid, id) > 0) {
             sessionRepository.updateSessionUpdatedAt(guid);
         } else {
             throw new ProductNotFoundException("There is no product with id " + id + " in the basket");
         }
     }
 
+    public void deleteByUserId(Integer userId, Long id) {
+        if (!(basketProductRepository.deleteByIdAndUserId(userId, id) > 0)) {
+            throw new ProductNotFoundException("There is no product with id " + id + " in the basket");
+        }
+    }
+
     @Transactional
     public void update(UUID guid, BasketDto basketProduct) {
-        if (basketProductService.updateCountByIdAndGuid(guid, basketProduct) > 0) {
+        if (basketProductRepository.updateCountByIdAndGuid(guid, basketProduct.getId(), basketProduct.getQuantity()) > 0) {
             sessionRepository.updateSessionUpdatedAt(guid);
         } else {
+            throw new ProductNotFoundException("There is no product with id " + basketProduct.getId() + " in the basket");
+        }
+    }
+
+    public void updateByUserId(Integer userId, BasketDto basketProduct) {
+        if (!(basketProductRepository.updateCountByIdAndUserId(userId, basketProduct.getId(), basketProduct.getQuantity()) > 0)) {
             throw new ProductNotFoundException("There is no product with id " + basketProduct.getId() + " in the basket");
         }
     }

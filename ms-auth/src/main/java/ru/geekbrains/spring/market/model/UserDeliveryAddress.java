@@ -33,4 +33,13 @@ public class UserDeliveryAddress {
 
     @Column(name = "add_info")
     private String addInfo;
+
+    public UserDeliveryAddress(UserDeliveryAddressDto userDeliveryAddressDto) {
+        this.city = userDeliveryAddressDto.getCity();
+        this.street = userDeliveryAddressDto.getStreet();
+        this.house = userDeliveryAddressDto.getHouse();
+        this.postalCode = userDeliveryAddressDto.getPostalCode();
+        this.apt = userDeliveryAddressDto.getApt();
+        this.addInfo = userDeliveryAddressDto.getAddInfo();
+    }
 }

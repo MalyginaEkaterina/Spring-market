@@ -16,7 +16,7 @@ public class ProductComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_product")
     private Product product;
     @Column(name = "id_user")
@@ -28,4 +28,10 @@ public class ProductComment {
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public ProductComment(AddProductCommentDto commentDto) {
+        this.userId = commentDto.getUserId();
+        this.rating = commentDto.getRating();
+        this.comment = commentDto.getComment();
+    }
 }

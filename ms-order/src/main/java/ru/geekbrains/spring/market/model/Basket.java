@@ -15,7 +15,7 @@ public class Basket {
     @Column
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_guid")
     private Session session;
 
