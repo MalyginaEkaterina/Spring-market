@@ -33,4 +33,12 @@ public class Promo {
 
     @Column(name = "is_applied")
     private Integer isApplied;
+
+    public Promo(PromoDto promoDto) {
+        this.expDate = LocalDateTime.now().plusDays(promoDto.getExpiryDays());
+        this.discountAbs = promoDto.getDiscountAbs();
+        this.discountPercent = promoDto.getDiscountPercent();
+        this.minOrderPrice = promoDto.getMinOrderPrice();
+        this.isApplied = 0;
+    }
 }

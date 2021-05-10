@@ -6,22 +6,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import ru.geekbrains.spring.market.Const;
 import ru.geekbrains.spring.market.Constants;
 import ru.geekbrains.spring.market.SortDirection;
+import ru.geekbrains.spring.market.configurations.jwt.JwtProvider;
 import ru.geekbrains.spring.market.exceptions.IncorrectParamException;
 import ru.geekbrains.spring.market.exceptions.ProductNotFoundException;
-import ru.geekbrains.spring.market.model.PageProductDto;
-import ru.geekbrains.spring.market.model.ProductDto;
+import ru.geekbrains.spring.market.model.*;
 import ru.geekbrains.spring.market.repositories.ProductSpecifications;
 import ru.geekbrains.spring.market.services.ProductService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping
 public class ProductController {
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @GetMapping
     public List<ProductDto> getAll(@RequestParam MultiValueMap<String, String> params,
@@ -69,21 +73,26 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductDto getById(@PathVariable Integer id) {
+    public FullProductDto getById(@PathVariable Integer id) {
         return productService.getById(id).orElseThrow(() -> new ProductNotFoundException("There is no product with id " + id));
+    }
+
+    @PostMapping("/by_ids")
+    public List<ProductBasketDto> getProductsByIds(@RequestBody ProductBasketRequestDto productIds) {
+        return productService.getProductsByIds(productIds.getListProductId());
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDto add(@RequestBody ProductDto product) {
+    public FullProductDto add(@RequestBody FullProductDto product) {
         product.setId(null);
         return productService.addOrUpdate(product);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping
-    public ProductDto update(@RequestBody ProductDto product) {
+    public FullProductDto update(@RequestBody FullProductDto product) {
         return productService.addOrUpdate(product);
     }
 
@@ -91,5 +100,13 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         productService.delete(id);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/add_comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addProductComment(@RequestHeader(Const.AUTHORIZATION) String token, @RequestBody AddProductCommentDto comment) {
+        comment.setUserId(jwtProvider.getUserIdFromToken(token.substring(7)));
+        productService.addProductComment(comment);
     }
 }

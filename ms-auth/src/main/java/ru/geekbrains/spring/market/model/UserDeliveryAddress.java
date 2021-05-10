@@ -1,16 +1,18 @@
 package ru.geekbrains.spring.market.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user_delivery_addresses")
 @Data
+@NoArgsConstructor
 public class UserDeliveryAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "id_user")
@@ -33,4 +35,13 @@ public class UserDeliveryAddress {
 
     @Column(name = "add_info")
     private String addInfo;
+
+    public UserDeliveryAddress(UserDeliveryAddressDto userDeliveryAddressDto) {
+        this.city = userDeliveryAddressDto.getCity();
+        this.street = userDeliveryAddressDto.getStreet();
+        this.house = userDeliveryAddressDto.getHouse();
+        this.postalCode = userDeliveryAddressDto.getPostalCode();
+        this.apt = userDeliveryAddressDto.getApt();
+        this.addInfo = userDeliveryAddressDto.getAddInfo();
+    }
 }

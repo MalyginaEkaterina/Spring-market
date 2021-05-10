@@ -3,25 +3,25 @@ package ru.geekbrains.spring.market.repositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import ru.geekbrains.spring.market.model.FullProductDto;
 import ru.geekbrains.spring.market.model.PageProductDto;
-import ru.geekbrains.spring.market.model.ProductDto;
 
 import java.util.Optional;
 
 @Component
 public class ProductRedisRepository {
     @Autowired
-    private RedisTemplate<String, ProductDto> productRedisTemplate;
+    private RedisTemplate<String, FullProductDto> productRedisTemplate;
     @Autowired
     private RedisTemplate<String, PageProductDto> productsPageRedisTemplate;
 
-    public Optional<ProductDto> getProduct(Integer id) {
+    public Optional<FullProductDto> getProduct(Integer id) {
         return Optional.ofNullable(
                 productRedisTemplate.opsForValue().get("product:" + id)
         );
     }
 
-    public void putProduct(ProductDto product) {
+    public void putProduct(FullProductDto product) {
         productRedisTemplate.opsForValue().set("product:" + product.getId(), product);
     }
 

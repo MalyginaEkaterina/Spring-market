@@ -8,13 +8,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.spring.market.Constants;
 import ru.geekbrains.spring.market.SortDirection;
-import ru.geekbrains.spring.market.model.PageProductDto;
-import ru.geekbrains.spring.market.model.Product;
-import ru.geekbrains.spring.market.model.ProductDto;
+import ru.geekbrains.spring.market.model.*;
+import ru.geekbrains.spring.market.repositories.ProductCommentRepository;
 import ru.geekbrains.spring.market.repositories.ProductRedisRepository;
 import ru.geekbrains.spring.market.repositories.ProductRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -25,12 +26,15 @@ public class ProductService {
     @Autowired
     private ProductRedisRepository productRedisRepository;
 
-    public Optional<ProductDto> getById(Integer id) {
-        Optional<ProductDto> product = productRedisRepository.getProduct(id);
+    @Autowired
+    private ProductCommentRepository productCommentRepository;
+
+    public Optional<FullProductDto> getById(Integer id) {
+        Optional<FullProductDto> product = productRedisRepository.getProduct(id);
         if (product.isPresent()) {
             return product;
         }
-        product = productRepository.findById(id).map(ProductDto::new);
+        product = productRepository.findById(id).map(FullProductDto::new);
         product.ifPresent(p -> productRedisRepository.putProduct(p));
         return product;
     }
@@ -93,9 +97,8 @@ public class ProductService {
         }
     }
 
-    public ProductDto addOrUpdate(ProductDto productDto) {
-        ProductDto product = new ProductDto(productRepository.save(new Product(productDto)));
-        productRedisRepository.putProduct(product);
+    public FullProductDto addOrUpdate(FullProductDto productDto) {
+        FullProductDto product = new FullProductDto(productRepository.save(new Product(productDto)));
         updateCachePages();
         return product;
     }
@@ -104,5 +107,22 @@ public class ProductService {
         productRepository.deleteById(id);
         productRedisRepository.deleteProduct(id);
         updateCachePages();
+    }
+
+    public void addProductComment(AddProductCommentDto comment) {
+        Product product = productRepository.getOne(comment.getProductId());
+        ProductComment productComment = new ProductComment(comment);
+        productComment.setProduct(product);
+        productCommentRepository.save(productComment);
+    }
+
+    public List<ProductBasketDto> getProductsByIds(List<Integer> listProductId) {
+        return productRepository.findAllById(listProductId).stream().map(p -> {
+            ProductBasketDto productBasketDto = new ProductBasketDto();
+            productBasketDto.setId(p.getId());
+            productBasketDto.setTitle(p.getTitle());
+            productBasketDto.setPrice(p.getPrice());
+            return productBasketDto;
+        }).collect(Collectors.toList());
     }
 }

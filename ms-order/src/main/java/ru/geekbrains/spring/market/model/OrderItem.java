@@ -15,7 +15,7 @@ public class OrderItem {
     @Column
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_order")
     private Order order;
 
@@ -27,4 +27,10 @@ public class OrderItem {
 
     @Column(name = "price_per_product")
     private Double pricePerProduct;
+
+    public OrderItem(FullBasketDto fullBasketDto) {
+        this.productId = fullBasketDto.getProduct().getId();
+        this.quantity = fullBasketDto.getQuantity();
+        this.pricePerProduct = fullBasketDto.getProduct().getPrice();
+    }
 }
