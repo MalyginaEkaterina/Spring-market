@@ -6,7 +6,6 @@ import ru.geekbrains.spring.market.model.DeliveryType;
 import ru.geekbrains.spring.market.model.PickUpPoint;
 import ru.geekbrains.spring.market.model.Shop;
 import ru.geekbrains.spring.market.repositories.DeliveryRedisRepository;
-import ru.geekbrains.spring.market.repositories.DeliveryTypeRepository;
 import ru.geekbrains.spring.market.repositories.PickUpPointRepository;
 import ru.geekbrains.spring.market.repositories.ShopRepository;
 
@@ -14,9 +13,6 @@ import java.util.List;
 
 @Service
 public class DeliveryService {
-    @Autowired
-    private DeliveryTypeRepository deliveryTypeRepository;
-
     @Autowired
     private PickUpPointRepository pickUpPointRepository;
 

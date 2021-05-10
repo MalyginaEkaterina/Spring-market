@@ -1,16 +1,18 @@
 package ru.geekbrains.spring.market.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user_delivery_addresses")
 @Data
+@NoArgsConstructor
 public class UserDeliveryAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "id_user")

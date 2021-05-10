@@ -1,5 +1,6 @@
 package ru.geekbrains.spring.market.controllers;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,7 +10,9 @@ import ru.geekbrains.spring.market.model.PickUpPoint;
 import ru.geekbrains.spring.market.model.Shop;
 import ru.geekbrains.spring.market.services.DeliveryService;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/delivery")
@@ -18,9 +21,15 @@ public class DeliveryController {
     @Autowired
     private DeliveryService deliveryService;
 
+    @Autowired
+    private AuthClient authClient;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @GetMapping("/types")
-    public List<DeliveryType> getAllTypes() {
-        return deliveryService.getAllTypes();
+    public List<DeliveryTypeDto> getAllTypes() {
+        return Arrays.stream(DeliveryType.values()).map(DeliveryTypeDto::new).collect(Collectors.toList());
     }
 
     @GetMapping("/shops")

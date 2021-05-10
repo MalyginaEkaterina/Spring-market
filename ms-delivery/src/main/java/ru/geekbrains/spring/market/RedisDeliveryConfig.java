@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import ru.geekbrains.spring.market.configurations.RedisConfig;
-import ru.geekbrains.spring.market.model.DeliveryType;
 import ru.geekbrains.spring.market.model.PickUpPoint;
 import ru.geekbrains.spring.market.model.Shop;
 
@@ -22,15 +21,6 @@ public class RedisDeliveryConfig {
 
     public RedisDeliveryConfig(RedisConfig redisConfig) {
         this.redisConfig = redisConfig;
-    }
-
-    @Bean
-    public RedisTemplate<String, List<DeliveryType>> deliveryTypeRedisTemplate() {
-        RedisTemplate<String, List<DeliveryType>> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConfig.jedisConnectionFactory());
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        return template;
     }
 
     @Bean

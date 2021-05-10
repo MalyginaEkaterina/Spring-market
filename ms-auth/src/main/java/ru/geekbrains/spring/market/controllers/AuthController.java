@@ -1,9 +1,11 @@
 package ru.geekbrains.spring.market.controllers;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.spring.market.Const;
+import ru.geekbrains.spring.market.configurations.MapperUtil;
 import ru.geekbrains.spring.market.configurations.jwt.JwtProvider;
 import ru.geekbrains.spring.market.model.*;
 import ru.geekbrains.spring.market.services.UserService;
@@ -19,6 +21,9 @@ public class AuthController {
 
     @Autowired
     private JwtProvider jwtProvider;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @PostMapping("/register")
     public String registerUser(@RequestBody SignUpRequestDto req) {
