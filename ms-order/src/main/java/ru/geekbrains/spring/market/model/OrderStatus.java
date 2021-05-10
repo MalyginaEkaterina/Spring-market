@@ -1,20 +1,17 @@
 package ru.geekbrains.spring.market.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public enum OrderStatus {
+    CREATED(1),
+    WASP_PAID(2),
+    COMPLETED(3);
 
-import javax.persistence.*;
+    private final int status;
 
-@Entity
-@Table(name = "order_status")
-@Data
-@NoArgsConstructor
-public class OrderStatus {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private Integer id;
+    OrderStatus(int status) {
+        this.status = status;
+    }
 
-    @Column
-    private String name;
+    public int getStatus() {
+        return status;
+    }
 }

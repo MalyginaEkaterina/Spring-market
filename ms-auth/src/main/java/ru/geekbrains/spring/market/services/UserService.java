@@ -3,6 +3,7 @@ package ru.geekbrains.spring.market.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.geekbrains.spring.market.exceptions.AddressNotFoundException;
 import ru.geekbrains.spring.market.exceptions.IncorrectParamException;
 import ru.geekbrains.spring.market.model.Role;
 import ru.geekbrains.spring.market.model.User;
@@ -11,6 +12,8 @@ import ru.geekbrains.spring.market.model.UserDeliveryAddressDto;
 import ru.geekbrains.spring.market.repositories.RoleRepository;
 import ru.geekbrains.spring.market.repositories.UserDeliveryAddressRepository;
 import ru.geekbrains.spring.market.repositories.UserRepository;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -65,5 +68,9 @@ public class UserService {
         UserDeliveryAddress userDeliveryAddress = new UserDeliveryAddress(addressDto);
         userDeliveryAddress.setUser(user);
         userDeliveryAddressRepository.save(userDeliveryAddress);
+    }
+
+    public UserDeliveryAddress getAddress(Long id) {
+        return userDeliveryAddressRepository.findById(id).orElseThrow(() -> new AddressNotFoundException("There is no address with id " + id));
     }
 }

@@ -12,17 +12,14 @@ import ru.geekbrains.spring.market.SortDirection;
 import ru.geekbrains.spring.market.configurations.jwt.JwtProvider;
 import ru.geekbrains.spring.market.exceptions.IncorrectParamException;
 import ru.geekbrains.spring.market.exceptions.ProductNotFoundException;
-import ru.geekbrains.spring.market.model.AddProductCommentDto;
-import ru.geekbrains.spring.market.model.FullProductDto;
-import ru.geekbrains.spring.market.model.PageProductDto;
-import ru.geekbrains.spring.market.model.ProductDto;
+import ru.geekbrains.spring.market.model.*;
 import ru.geekbrains.spring.market.repositories.ProductSpecifications;
 import ru.geekbrains.spring.market.services.ProductService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping
 public class ProductController {
     @Autowired
     private ProductService productService;
@@ -78,6 +75,11 @@ public class ProductController {
     @GetMapping("/{id}")
     public FullProductDto getById(@PathVariable Integer id) {
         return productService.getById(id).orElseThrow(() -> new ProductNotFoundException("There is no product with id " + id));
+    }
+
+    @PostMapping("/by_ids")
+    public List<ProductBasketDto> getProductsByIds(@RequestBody ProductBasketRequestDto productIds) {
+        return productService.getProductsByIds(productIds.getListProductId());
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

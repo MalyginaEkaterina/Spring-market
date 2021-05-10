@@ -13,7 +13,9 @@ import ru.geekbrains.spring.market.repositories.ProductCommentRepository;
 import ru.geekbrains.spring.market.repositories.ProductRedisRepository;
 import ru.geekbrains.spring.market.repositories.ProductRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -112,5 +114,15 @@ public class ProductService {
         ProductComment productComment = new ProductComment(comment);
         productComment.setProduct(product);
         productCommentRepository.save(productComment);
+    }
+
+    public List<ProductBasketDto> getProductsByIds(List<Integer> listProductId) {
+        return productRepository.findAllById(listProductId).stream().map(p -> {
+            ProductBasketDto productBasketDto = new ProductBasketDto();
+            productBasketDto.setId(p.getId());
+            productBasketDto.setTitle(p.getTitle());
+            productBasketDto.setPrice(p.getPrice());
+            return productBasketDto;
+        }).collect(Collectors.toList());
     }
 }

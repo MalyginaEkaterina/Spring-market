@@ -2,11 +2,10 @@ package ru.geekbrains.spring.market.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.spring.market.model.DeliveryType;
-import ru.geekbrains.spring.market.model.PickUpPoint;
-import ru.geekbrains.spring.market.model.Shop;
+import ru.geekbrains.spring.market.DeliveryPrice;
+import ru.geekbrains.spring.market.exceptions.ShopNotFoundException;
+import ru.geekbrains.spring.market.model.*;
 import ru.geekbrains.spring.market.repositories.DeliveryRedisRepository;
-import ru.geekbrains.spring.market.repositories.DeliveryTypeRepository;
 import ru.geekbrains.spring.market.repositories.PickUpPointRepository;
 import ru.geekbrains.spring.market.repositories.ShopRepository;
 
@@ -14,9 +13,6 @@ import java.util.List;
 
 @Service
 public class DeliveryService {
-    @Autowired
-    private DeliveryTypeRepository deliveryTypeRepository;
-
     @Autowired
     private PickUpPointRepository pickUpPointRepository;
 
@@ -26,17 +22,8 @@ public class DeliveryService {
     @Autowired
     private DeliveryRedisRepository deliveryRedisRepository;
 
-    public List<DeliveryType> getAllTypes() {
-        List<DeliveryType> deliveryTypes = deliveryRedisRepository.getDeliveryTypes();
-        if (deliveryTypes != null) {
-            return deliveryTypes;
-        }
-        deliveryTypes = deliveryTypeRepository.findAll();
-        if (!deliveryTypes.isEmpty()) {
-            deliveryRedisRepository.putDeliveryTypes(deliveryTypes);
-        }
-        return deliveryTypes;
-    }
+    @Autowired
+    private DeliveryPrice deliveryPrice;
 
     public List<Shop> getAllShops() {
         List<Shop> shops = deliveryRedisRepository.getShops();
@@ -66,5 +53,24 @@ public class DeliveryService {
         Shop shop = shopRepository.save(shopDto);
         deliveryRedisRepository.deleteShops();
         return shop;
+    }
+
+    public DeliveryPriceResponseDto getDeliveryPrice(DeliveryPriceRequestDto deliveryPriceRequestDto) {
+        DeliveryPriceResponseDto deliveryPriceResponseDto = new DeliveryPriceResponseDto();
+        for (DeliveryPriceConditions conditions : deliveryPrice.getPriceConfig().getPriceConfig().get(deliveryPriceRequestDto.getDeliveryType())) {
+            if (conditions.getMinTotalPrice() <= deliveryPriceRequestDto.getTotalPrice()) {
+                deliveryPriceResponseDto.setPrice((float) conditions.getPrice());
+                return deliveryPriceResponseDto;
+            }
+        }
+        return deliveryPriceResponseDto;
+    }
+
+    public Shop getShop(Long id) {
+        return shopRepository.findById(id).orElseThrow(() -> new ShopNotFoundException("There is no shop with id " + id));
+    }
+
+    public PickUpPoint getPickUpPoint(Long id) {
+        return pickUpPointRepository.findById(id).orElseThrow(() -> new ShopNotFoundException("There is no shop with id " + id));
     }
 }

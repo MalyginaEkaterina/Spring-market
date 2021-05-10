@@ -30,4 +30,11 @@ public interface BasketProductRepository extends JpaRepository<Basket, Long> {
     @Query(value = "delete from basket b where b.id = :id and b.id_user = :userId", nativeQuery = true)
     int deleteByIdAndUserId(@Param("userId") Integer userId, @Param("id") Long id);
 
+    @Modifying
+    @Query(value = "update basket b set b.id_user = :userId where b.session_guid = :guid", nativeQuery = true)
+    int setUserIdOnSession(@Param("guid") UUID guid, @Param("userId") Integer userId);
+
+    @Modifying
+    @Query(value = "delete from basket b where b.id in :listId", nativeQuery = true)
+    int deleteByIds(@Param("listId") List<Long> ids);
 }

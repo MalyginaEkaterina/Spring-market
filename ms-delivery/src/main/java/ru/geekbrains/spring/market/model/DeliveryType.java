@@ -1,20 +1,24 @@
 package ru.geekbrains.spring.market.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.persistence.*;
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public enum DeliveryType {
+    COURIER(1),
+    SHOP(2),
+    PICK_UP_POINT(3);
 
-@Entity
-@Table(name = "delivery_types")
-@Data
-@NoArgsConstructor
-public class DeliveryType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private Integer id;
+    private final Integer id;
 
-    @Column
-    private String name;
+    DeliveryType(Integer type) {
+        this.id = type;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getName() {
+        return this.toString();
+    }
 }
