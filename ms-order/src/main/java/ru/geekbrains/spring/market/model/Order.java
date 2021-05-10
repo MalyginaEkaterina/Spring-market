@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "orders")
@@ -21,9 +22,8 @@ public class Order {
     @Column(name = "id_user")
     private Integer userId;
 
-    @ManyToOne
-    @JoinColumn(name = "status")
-    private OrderStatus orderStatus;
+    @Column(name = "status")
+    private Integer orderStatus;
 
     @Column(name = "delivery_type")
     private Integer deliveryType;
@@ -37,6 +37,9 @@ public class Order {
     @Column(name = "delivery_price")
     private Double deliveryPrice;
 
+    @Column(name = "total_price")
+    private Double totalPrice;
+
     @OneToOne
     @JoinColumn(name = "promo")
     private Promo promo;
@@ -45,7 +48,19 @@ public class Order {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     List<OrderItem> items;
 
+    public Order(OrderRequestDto orderRequestDto) {
+        this.deliveryType = orderRequestDto.getDeliveryType();
+        this.deliveryDetails = orderRequestDto.getDeliveryDetails();
+        this.price = orderRequestDto.getPrice();
+        this.deliveryPrice = orderRequestDto.getDeliveryPrice();
+        this.totalPrice = orderRequestDto.getPrice() + orderRequestDto.getDeliveryPrice();
+        this.items = orderRequestDto.getItems().stream().map(fullBasketDto -> {
+            OrderItem orderItem = new OrderItem(fullBasketDto);
+            orderItem.setOrder(this);
+            return orderItem;
+        }).collect(Collectors.toList());
+    }
 }

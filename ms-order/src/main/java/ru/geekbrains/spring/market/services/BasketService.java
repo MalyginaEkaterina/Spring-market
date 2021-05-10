@@ -8,6 +8,7 @@ import ru.geekbrains.spring.market.exceptions.SessionExpiredException;
 import ru.geekbrains.spring.market.model.Basket;
 import ru.geekbrains.spring.market.model.BasketDto;
 import ru.geekbrains.spring.market.model.Session;
+import ru.geekbrains.spring.market.model.SetUserIdOnSessionReqDto;
 import ru.geekbrains.spring.market.repositories.BasketProductRepository;
 import ru.geekbrains.spring.market.repositories.SessionRepository;
 
@@ -74,6 +75,11 @@ public class BasketService {
     }
 
     @Transactional
+    public void deleteByIds(List<Long> ids) {
+        basketProductRepository.deleteByIds(ids);
+    }
+
+    @Transactional
     public void update(UUID guid, BasketDto basketProduct) {
         if (basketProductRepository.updateCountByIdAndGuid(guid, basketProduct.getId(), basketProduct.getQuantity()) > 0) {
             sessionRepository.updateSessionUpdatedAt(guid);
@@ -86,5 +92,9 @@ public class BasketService {
         if (!(basketProductRepository.updateCountByIdAndUserId(userId, basketProduct.getId(), basketProduct.getQuantity()) > 0)) {
             throw new ProductNotFoundException("There is no product with id " + basketProduct.getId() + " in the basket");
         }
+    }
+
+    public void setUserIdOnSession(SetUserIdOnSessionReqDto reqDto) {
+        basketProductRepository.setUserIdOnSession(reqDto.getGuid(), reqDto.getUserId());
     }
 }

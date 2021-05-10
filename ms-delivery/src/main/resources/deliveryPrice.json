@@ -1,0 +1,26 @@
+{
+  "priceConfig": {
+    "COURIER": [
+      {
+        "minTotalPrice": 10000,
+        "price": 0
+      },
+      {
+        "minTotalPrice": 0,
+        "price": 333
+      }
+    ],
+    "SHOP": [
+      {
+        "minTotalPrice": 0,
+        "price": 255
+      }
+    ],
+    "PICK_UP_POINT": [
+      {
+        "minTotalPrice": 0,
+        "price": 222
+      }
+    ]
+  }
+}

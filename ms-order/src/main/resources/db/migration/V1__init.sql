@@ -18,11 +18,6 @@ CREATE TABLE `basket` (
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
 
-CREATE TABLE `order_status` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`));
-
 CREATE TABLE `promo` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `promo_code` VARCHAR(45) NOT NULL,
@@ -45,13 +40,7 @@ CREATE TABLE `orders` (
   `promo` BIGINT UNSIGNED NULL,
   `created_at` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_orders_status_idx` (`status` ASC) VISIBLE,
   INDEX `fk_orders_promo_idx` (`promo` ASC) VISIBLE,
-  CONSTRAINT `fk_orders_status`
-    FOREIGN KEY (`status`)
-    REFERENCES `order_status` (`id`)
-    ON DELETE RESTRICT
-    ON UPDATE RESTRICT,
   CONSTRAINT `fk_orders_promo`
     FOREIGN KEY (`promo`)
     REFERENCES `promo` (`id`)
