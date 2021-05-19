@@ -56,7 +56,7 @@ public class DeliveryController {
         return deliveryService.getAllPoints();
     }
 
-    @GetMapping("/price")
+    @PostMapping("/price")
     public DeliveryPriceResponseDto getDeliveryPrice(@RequestBody DeliveryPriceRequestDto deliveryPriceRequestDto) {
         return deliveryService.getDeliveryPrice(deliveryPriceRequestDto);
     }

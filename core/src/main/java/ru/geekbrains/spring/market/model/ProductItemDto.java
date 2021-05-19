@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryPriceRequestDto {
-    private String deliveryType;
-    private Float totalPrice;
+public class ProductItemDto {
+    private Integer productId;
+    private Integer quantity;
 }

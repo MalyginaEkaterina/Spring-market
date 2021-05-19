@@ -60,7 +60,6 @@ public class DeliveryService {
         for (DeliveryPriceConditions conditions : deliveryPrice.getPriceConfig().getPriceConfig().get(deliveryPriceRequestDto.getDeliveryType())) {
             if (conditions.getMinTotalPrice() <= deliveryPriceRequestDto.getTotalPrice()) {
                 deliveryPriceResponseDto.setPrice((float) conditions.getPrice());
-                return deliveryPriceResponseDto;
             }
         }
         return deliveryPriceResponseDto;
