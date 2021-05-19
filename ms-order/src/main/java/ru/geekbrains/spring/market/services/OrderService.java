@@ -3,11 +3,13 @@ package ru.geekbrains.spring.market.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.geekbrains.spring.market.exceptions.OrderNotFoundException;
 import ru.geekbrains.spring.market.exceptions.PromoInvalidException;
 import ru.geekbrains.spring.market.model.*;
 import ru.geekbrains.spring.market.repositories.OrderRepository;
 import ru.geekbrains.spring.market.repositories.PromoRepository;
 
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -69,5 +71,17 @@ public class OrderService {
         orderResponseDto.setId(orderRepository.save(order).getId());
         basketService.deleteByIds(orderRequestDto.getItems().stream().map(FullBasketDto::getId).collect(Collectors.toList()));
         return orderResponseDto;
+    }
+
+    public Order getOrderInfo(Integer userId, Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("There is no order with id " + id));
+        if (order.getUserId() != userId) {
+            throw new OrderNotFoundException("There is no order with id " + id);
+        }
+        return order;
+    }
+
+    public List<OrderBriefInfoDto> getOrders(Integer userId) {
+        return orderRepository.findAllByUserId(userId).stream().map(OrderBriefInfoDto::new).collect(Collectors.toList());
     }
 }
