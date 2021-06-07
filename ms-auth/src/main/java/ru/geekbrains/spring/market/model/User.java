@@ -1,6 +1,8 @@
 package ru.geekbrains.spring.market.model;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.With;
 
 import javax.persistence.*;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Data
+@Builder
 public class User {
 
     @Id

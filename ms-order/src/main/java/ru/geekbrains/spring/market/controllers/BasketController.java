@@ -45,13 +45,11 @@ public class BasketController {
                 .getProductsByIds(new ProductBasketRequestDto(productIds))
                 .stream()
                 .collect(Collectors.toMap(p -> p.getId(), p -> p));
-        return basketDtos.stream().map(b -> {
-                    FullBasketDto fullBasketDto = new FullBasketDto();
-                    fullBasketDto.setId(b.getId());
-                    fullBasketDto.setProduct(productBasketDtos.get(b.getProductId()));
-                    fullBasketDto.setQuantity(b.getQuantity());
-                    return fullBasketDto;
-                }
+        return basketDtos.stream().map(b -> FullBasketDto.builder()
+                .id(b.getId())
+                .product(productBasketDtos.get(b.getProductId()))
+                .quantity(b.getQuantity())
+                .build()
         ).collect(Collectors.toList());
     }
 

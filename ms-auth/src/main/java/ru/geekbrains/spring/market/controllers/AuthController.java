@@ -29,13 +29,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@RequestBody SignUpRequestDto req) {
-        User user = new User();
-        user.setPassword(req.getPassword());
-        user.setLogin(req.getLogin());
-        user.setFio(req.getFio());
-        user.setPhone(req.getPhone());
-        user.setEmail(req.getEmail());
-        user.setRoles(new ArrayList<>());
+        User user = User.builder()
+                .password(req.getPassword())
+                .login(req.getLogin())
+                .fio(req.getFio())
+                .phone(req.getPhone())
+                .email(req.getEmail())
+                .roles(new ArrayList<>())
+                .build();
         userService.saveUser(user, "USER");
         return "OK";
     }
@@ -60,7 +61,7 @@ public class AuthController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/user_logout")
+        @PostMapping("/user_logout")
     public String logout(@RequestHeader(Const.AUTHORIZATION) String token) {
         jwtProvider.setTokenLogout(token.substring(7));
         return "OK";
