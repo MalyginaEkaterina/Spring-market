@@ -50,14 +50,13 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     public OrderResponseDto createOrder(@RequestHeader(Const.AUTHORIZATION) String token, @RequestBody OrderRequestDto orderRequestDto) {
-        List<ProductItemDto> productItemDtoList = orderRequestDto.getItems().stream().map(fullBasketDto -> {
-            ProductItemDto productItemDto = new ProductItemDto();
-            productItemDto.setProductId(fullBasketDto.getProduct().getId());
-            productItemDto.setQuantity(fullBasketDto.getQuantity());
-            return productItemDto;
-        }).collect(Collectors.toList());
+        List<ProductItemDto> productItemDtoList = orderRequestDto.getItems().stream().map(fullBasketDto -> ProductItemDto.builder()
+            .productId(fullBasketDto.getProduct().getId())
+            .quantity(fullBasketDto.getQuantity())
+            .build()
+        ).collect(Collectors.toList());
         ProductReserveResponse reserveResponse = storageClient.reserveProducts(productItemDtoList);
-        if (reserveResponse.getStatus() == Const.STATUS_OK) {
+        if (reserveResponse.getStatus().equals(Const.STATUS_OK)) {
             return orderService.createOrder(jwtProvider.getUserIdFromToken(token.substring(7)), orderRequestDto);
         } else {
             throw new NotEnoughProductsException("Not enough products in storage", reserveResponse);
