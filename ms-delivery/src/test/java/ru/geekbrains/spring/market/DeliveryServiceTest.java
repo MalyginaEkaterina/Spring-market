@@ -12,15 +12,20 @@ import ru.geekbrains.spring.market.model.*;
 import ru.geekbrains.spring.market.repositories.DeliveryRedisRepository;
 import ru.geekbrains.spring.market.repositories.PickUpPointRepository;
 import ru.geekbrains.spring.market.repositories.ShopRepository;
+import ru.geekbrains.spring.market.services.CachingShopService;
 import ru.geekbrains.spring.market.services.DeliveryService;
+import ru.geekbrains.spring.market.services.ShopService;
 
 import java.util.*;
 
-@SpringBootTest(classes = DeliveryService.class)
+@SpringBootTest
 public class DeliveryServiceTest {
 
     @Autowired
     private DeliveryService deliveryService;
+
+    @Autowired
+    private CachingShopService shopService;
 
     @MockBean
     private ShopRepository shopRepository;
@@ -55,7 +60,7 @@ public class DeliveryServiceTest {
                 .when(deliveryRedisRepository)
                 .getShops();
 
-        List<Shop> res = deliveryService.getAllShops();
+        List<Shop> res = shopService.getAllShops();
         Mockito.verify(deliveryRedisRepository, Mockito.times(1)).getShops();
         Assertions.assertEquals(2, res.size());
         Assertions.assertEquals("two", res.get(1).getCity());
@@ -73,7 +78,7 @@ public class DeliveryServiceTest {
                 .when(shopRepository)
                 .findAll();
 
-        List<Shop> res = deliveryService.getAllShops();
+        List<Shop> res = shopService.getAllShops();
         Mockito.verify(deliveryRedisRepository, Mockito.times(0)).putShops(res);
         Assertions.assertEquals(0, res.size());
     }
@@ -104,7 +109,7 @@ public class DeliveryServiceTest {
                 .when(shopRepository)
                 .findAll();
 
-        List<Shop> res = deliveryService.getAllShops();
+        List<Shop> res = shopService.getAllShops();
         Mockito.verify(shopRepository, Mockito.times(1)).findAll();
         Mockito.verify(deliveryRedisRepository, Mockito.times(1)).putShops(ArgumentMatchers.eq(shops));
         Assertions.assertEquals(2, res.size());
@@ -200,7 +205,7 @@ public class DeliveryServiceTest {
                 .when(shopRepository)
                 .findById(1L);
 
-        Shop res = deliveryService.getShop(1L);
+        Shop res = shopService.getShop(1L);
         Mockito.verify(shopRepository, Mockito.times(1)).findById(ArgumentMatchers.eq(1L));
         Assertions.assertEquals("one", res.getCity());
     }
@@ -213,7 +218,7 @@ public class DeliveryServiceTest {
                 .findById(1L);
 
         Assertions.assertThrows(ShopNotFoundException.class, () -> {
-            deliveryService.getShop(1L);
+            shopService.getShop(1L);
         });
         Mockito.verify(shopRepository, Mockito.times(1)).findById(ArgumentMatchers.eq(1L));
     }
