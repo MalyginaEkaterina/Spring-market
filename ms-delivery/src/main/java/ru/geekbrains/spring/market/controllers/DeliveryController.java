@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.spring.market.AuthClient;
 import ru.geekbrains.spring.market.exceptions.DeliveryTypeNotFoundException;
 import ru.geekbrains.spring.market.model.*;
+import ru.geekbrains.spring.market.services.CachingShopService;
 import ru.geekbrains.spring.market.services.DeliveryService;
 
 import java.util.Arrays;
@@ -22,6 +23,9 @@ public class DeliveryController {
     private DeliveryService deliveryService;
 
     @Autowired
+    private CachingShopService shopService;
+
+    @Autowired
     private AuthClient authClient;
 
     @Autowired
@@ -34,7 +38,7 @@ public class DeliveryController {
 
     @GetMapping("/shops")
     public List<Shop> getAllShops() {
-        return deliveryService.getAllShops();
+        return shopService.getAllShops();
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -42,13 +46,13 @@ public class DeliveryController {
     @ResponseStatus(HttpStatus.CREATED)
     public Shop addShop(@RequestBody Shop shop) {
         shop.setId(null);
-        return deliveryService.addOrUpdateShop(shop);
+        return shopService.addOrUpdateShop(shop);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/update_shop")
     public Shop updateShop(@RequestBody Shop shop) {
-        return deliveryService.addOrUpdateShop(shop);
+        return shopService.addOrUpdateShop(shop);
     }
 
     @GetMapping("/pick_up_points")
@@ -68,7 +72,7 @@ public class DeliveryController {
             UserDeliveryAddressDto userDeliveryAddressDto = authClient.getUserAddress(deliveryInfoRequestDto.getDeliveryDetails());
             response.setUserDeliveryAddress(userDeliveryAddressDto);
         } else if (deliveryInfoRequestDto.getDeliveryType().equals(DeliveryType.SHOP.getId())) {
-            Shop shop = deliveryService.getShop(deliveryInfoRequestDto.getDeliveryDetails());
+            Shop shop = shopService.getShop(deliveryInfoRequestDto.getDeliveryDetails());
             response.setShop(modelMapper.map(shop, ShopDto.class));
         } else if (deliveryInfoRequestDto.getDeliveryType().equals(DeliveryType.PICK_UP_POINT.getId())) {
             PickUpPoint pickUpPoint = deliveryService.getPickUpPoint(deliveryInfoRequestDto.getDeliveryDetails());

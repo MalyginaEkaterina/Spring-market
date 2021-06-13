@@ -7,7 +7,6 @@ import ru.geekbrains.spring.market.exceptions.ShopNotFoundException;
 import ru.geekbrains.spring.market.model.*;
 import ru.geekbrains.spring.market.repositories.DeliveryRedisRepository;
 import ru.geekbrains.spring.market.repositories.PickUpPointRepository;
-import ru.geekbrains.spring.market.repositories.ShopRepository;
 
 import java.util.List;
 
@@ -17,25 +16,22 @@ public class DeliveryService {
     private PickUpPointRepository pickUpPointRepository;
 
     @Autowired
-    private ShopRepository shopRepository;
-
-    @Autowired
     private DeliveryRedisRepository deliveryRedisRepository;
 
     @Autowired
     private DeliveryPrice deliveryPrice;
 
-    public List<Shop> getAllShops() {
-        List<Shop> shops = deliveryRedisRepository.getShops();
-        if (shops != null) {
-            return shops;
-        }
-        shops = shopRepository.findAll();
-        if (!shops.isEmpty()) {
-            deliveryRedisRepository.putShops(shops);
-        }
-        return shops;
-    }
+//    public List<Shop> getAllShops() {
+//        List<Shop> shops = deliveryRedisRepository.getShops();
+//        if (shops != null) {
+//            return shops;
+//        }
+//        shops = shopRepository.findAll();
+//        if (!shops.isEmpty()) {
+//            deliveryRedisRepository.putShops(shops);
+//        }
+//        return shops;
+//    }
 
     public List<PickUpPoint> getAllPoints() {
         List<PickUpPoint> pickUpPoints = deliveryRedisRepository.getPickUpPoints();
@@ -49,12 +45,6 @@ public class DeliveryService {
         return pickUpPoints;
     }
 
-    public Shop addOrUpdateShop(Shop shopDto) {
-        Shop shop = shopRepository.save(shopDto);
-        deliveryRedisRepository.deleteShops();
-        return shop;
-    }
-
     public DeliveryPriceResponseDto getDeliveryPrice(DeliveryPriceRequestDto deliveryPriceRequestDto) {
         DeliveryPriceResponseDto deliveryPriceResponseDto = new DeliveryPriceResponseDto();
         for (DeliveryPriceConditions conditions : deliveryPrice.getPriceConfig().getPriceConfig().get(deliveryPriceRequestDto.getDeliveryType())) {
@@ -63,10 +53,6 @@ public class DeliveryService {
             }
         }
         return deliveryPriceResponseDto;
-    }
-
-    public Shop getShop(Long id) {
-        return shopRepository.findById(id).orElseThrow(() -> new ShopNotFoundException("There is no shop with id " + id));
     }
 
     public PickUpPoint getPickUpPoint(Long id) {
