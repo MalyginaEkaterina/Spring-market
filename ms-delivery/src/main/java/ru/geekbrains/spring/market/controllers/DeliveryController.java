@@ -26,10 +26,13 @@ public class DeliveryController {
     private CachingShopService shopService;
 
     @Autowired
-    private AuthClient authClient;
+    private CourierDeliveryStrategy courierDeliveryStrategy;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private ShopDeliveryStrategy shopDeliveryStrategy;
+
+    @Autowired
+    private PickUpPointDeliveryStrategy pickUpPointDeliveryStrategy;
 
     @GetMapping("/types")
     public List<DeliveryTypeDto> getAllTypes() {
@@ -67,19 +70,16 @@ public class DeliveryController {
 
     @PostMapping("/delivery_details")
     public DeliveryInfoResponseDto getDeliveryDetails(@RequestBody DeliveryInfoRequestDto deliveryInfoRequestDto) {
-        DeliveryInfoResponseDto response = new DeliveryInfoResponseDto();
+        DeliveryStrategy strategy;
         if (deliveryInfoRequestDto.getDeliveryType().equals(DeliveryType.COURIER.getId())) {
-            UserDeliveryAddressDto userDeliveryAddressDto = authClient.getUserAddress(deliveryInfoRequestDto.getDeliveryDetails());
-            response.setUserDeliveryAddress(userDeliveryAddressDto);
+            strategy = courierDeliveryStrategy;
         } else if (deliveryInfoRequestDto.getDeliveryType().equals(DeliveryType.SHOP.getId())) {
-            Shop shop = shopService.getShop(deliveryInfoRequestDto.getDeliveryDetails());
-            response.setShop(modelMapper.map(shop, ShopDto.class));
+            strategy = shopDeliveryStrategy;
         } else if (deliveryInfoRequestDto.getDeliveryType().equals(DeliveryType.PICK_UP_POINT.getId())) {
-            PickUpPoint pickUpPoint = deliveryService.getPickUpPoint(deliveryInfoRequestDto.getDeliveryDetails());
-            response.setPickUpPoint(modelMapper.map(pickUpPoint, PickUpPointDto.class));
+            strategy = pickUpPointDeliveryStrategy;
         } else {
             throw new DeliveryTypeNotFoundException("There is no type with id " + deliveryInfoRequestDto.getDeliveryType());
         }
-        return response;
+        return strategy.getDeliveryInfo(deliveryInfoRequestDto.getDeliveryDetails());
     }
 }
