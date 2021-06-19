@@ -23,4 +23,11 @@ public class DeliveryExceptionControllerAdvice {
         MarketError err = new MarketError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         return new ResponseEntity<>(err, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<?> handleShopSqlException(ShopSqlException e) {
+        log.error(e.getMessage());
+        MarketError err = new MarketError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+        return new ResponseEntity<>(err, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
