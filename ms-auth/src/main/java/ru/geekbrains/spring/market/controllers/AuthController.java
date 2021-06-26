@@ -63,14 +63,14 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
         @PostMapping("/user_logout")
     public String logout(@RequestHeader(Const.AUTHORIZATION) String token) {
-        jwtProvider.setTokenLogout(token.substring(7));
+        jwtProvider.setTokenLogout(token.substring(Const.TOKEN_START_LEN));
         return "OK";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add_user_address")
     public String addUserAddress(@RequestHeader(Const.AUTHORIZATION) String token, @RequestBody UserDeliveryAddressDto address) {
-        Integer userId = jwtProvider.getUserIdFromToken(token.substring(7));
+        Integer userId = jwtProvider.getUserIdFromToken(token.substring(Const.TOKEN_START_LEN));
         userService.addAddress(address, userId);
         return "OK";
     }
@@ -83,7 +83,7 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/user_info")
     public UserInfoDto getUserInfo(@RequestHeader(Const.AUTHORIZATION) String token) {
-        String login = jwtProvider.getLoginFromToken(token.substring(7));
+        String login = jwtProvider.getLoginFromToken(token.substring(Const.TOKEN_START_LEN));
         User user = userService.findByLogin(login);
         modelMapper.typeMap(User.class, UserInfoDto.class).addMappings(mapper -> mapper.skip(UserInfoDto::setAddresses));
         UserInfoDto userInfoDto = modelMapper.map(user, UserInfoDto.class);

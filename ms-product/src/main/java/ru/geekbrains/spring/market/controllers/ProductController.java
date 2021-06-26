@@ -106,7 +106,7 @@ public class ProductController {
     @PostMapping("/add_comment")
     @ResponseStatus(HttpStatus.CREATED)
     public void addProductComment(@RequestHeader(Const.AUTHORIZATION) String token, @RequestBody AddProductCommentDto comment) {
-        comment.setUserId(jwtProvider.getUserIdFromToken(token.substring(7)));
+        comment.setUserId(jwtProvider.getUserIdFromToken(token.substring(Const.TOKEN_START_LEN)));
         productService.addProductComment(comment);
     }
 }

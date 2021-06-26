@@ -33,7 +33,7 @@ public class BasketController {
     public List<FullBasketDto> getBasket(@CookieValue(value = "session_guid", required = false) UUID guid,
                                          @RequestHeader(value = Const.AUTHORIZATION, required = false) String token) {
         List<BasketDto> basketDtos;
-        if (token != null && jwtProvider.validateToken(token.substring(7))) {
+        if (token != null && jwtProvider.validateToken(token.substring(Const.TOKEN_START_LEN))) {
             basketDtos = basketService.getBasketByUserId(jwtProvider.getUserIdFromToken(token.substring(7)));
         } else if (guid != null) {
             basketDtos = basketService.getBasket(guid);
@@ -60,8 +60,8 @@ public class BasketController {
                            @RequestBody BasketDto basketProduct,
                            HttpServletResponse response) {
         basketProduct.setId(null);
-        if (token != null && jwtProvider.validateToken(token.substring(7))) {
-            basketService.addByUserId(jwtProvider.getUserIdFromToken(token.substring(7)), basketProduct);
+        if (token != null && jwtProvider.validateToken(token.substring(Const.TOKEN_START_LEN))) {
+            basketService.addByUserId(jwtProvider.getUserIdFromToken(token.substring(Const.TOKEN_START_LEN)), basketProduct);
         } else if (guid != null) {
             basketService.add(guid, basketProduct);
         } else {
@@ -77,8 +77,8 @@ public class BasketController {
     public void update(@CookieValue(value = "session_guid", required = false) UUID guid,
                        @RequestHeader(value = Const.AUTHORIZATION, required = false) String token,
                        @RequestBody BasketDto basketProduct) {
-        if (token != null && jwtProvider.validateToken(token.substring(7))) {
-            basketService.updateByUserId(jwtProvider.getUserIdFromToken(token.substring(7)), basketProduct);
+        if (token != null && jwtProvider.validateToken(token.substring(Const.TOKEN_START_LEN))) {
+            basketService.updateByUserId(jwtProvider.getUserIdFromToken(token.substring(Const.TOKEN_START_LEN)), basketProduct);
         } else if (guid != null) {
             basketService.update(guid, basketProduct);
         } else {
@@ -90,8 +90,8 @@ public class BasketController {
     public void delete(@CookieValue(value = "session_guid", required = false) UUID guid,
                        @RequestHeader(value = Const.AUTHORIZATION, required = false) String token,
                        @PathVariable Long id) {
-        if (token != null && jwtProvider.validateToken(token.substring(7))) {
-            basketService.deleteByUserId(jwtProvider.getUserIdFromToken(token.substring(7)), id);
+        if (token != null && jwtProvider.validateToken(token.substring(Const.TOKEN_START_LEN))) {
+            basketService.deleteByUserId(jwtProvider.getUserIdFromToken(token.substring(Const.TOKEN_START_LEN)), id);
         } else if (guid != null) {
             basketService.delete(guid, id);
         } else {
