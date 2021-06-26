@@ -57,7 +57,7 @@ public class OrderController {
         ).collect(Collectors.toList());
         ProductReserveResponse reserveResponse = storageClient.reserveProducts(productItemDtoList);
         if (reserveResponse.getStatus().equals(Const.STATUS_OK)) {
-            return orderService.createOrder(jwtProvider.getUserIdFromToken(token.substring(7)), orderRequestDto);
+            return orderService.createOrder(jwtProvider.getUserIdFromToken(token.substring(Const.TOKEN_START_LEN)), orderRequestDto);
         } else {
             throw new NotEnoughProductsException("Not enough products in storage", reserveResponse);
         }
@@ -66,13 +66,13 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<OrderBriefInfoDto> getOrders(@RequestHeader(Const.AUTHORIZATION) String token) {
-        return orderService.getOrders(jwtProvider.getUserIdFromToken(token.substring(7)));
+        return orderService.getOrders(jwtProvider.getUserIdFromToken(token.substring(Const.TOKEN_START_LEN)));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public OrderInfoDto getOrderInfo(@RequestHeader(Const.AUTHORIZATION) String token, @PathVariable Long id) {
-        Order order = orderService.getOrderInfo(jwtProvider.getUserIdFromToken(token.substring(7)), id);
+        Order order = orderService.getOrderInfo(jwtProvider.getUserIdFromToken(token.substring(Const.TOKEN_START_LEN)), id);
         OrderInfoDto orderInfoDto = new OrderInfoDto(order);
         orderInfoDto.setDeliveryInfoResponseDto(deliveryClient
                 .getDeliveryDetails(new DeliveryInfoRequestDto(order.getDeliveryType(), order.getDeliveryDetails())));
